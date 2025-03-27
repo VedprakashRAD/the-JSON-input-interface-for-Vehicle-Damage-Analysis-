@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Damage Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .report-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #1a365d;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .subtitle {
+            color: #666;
+            font-style: italic;
+        }
+        section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        section h3 {
+            color: #2c5282;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        table td {
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        table tr:nth-child(even) {
+            background: #f0f4f8;
+        }
+        .total {
+            font-weight: bold;
+            background: #2c5282 !important;
+            color: white;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+            color: #4a5568;
+        }
+        .preview-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .preview-images .image-container {
+            position: relative;
+            width: 200px;
+        }
+        .preview-images img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+        .preview-images .remove-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 24px;
+            cursor: pointer;
+        }
+        #dropZone {
+            border: 2px dashed #4a5568;
+            padding: 40px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #dropZone.dragover {
+            background: #e2e8f0;
+            border-color: #2c5282;
+            transform: scale(1.02);
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Vehicle Damage Analysis</h1>
+            
+            <form id="uploadForm" class="space-y-4">
+                <div id="dropZone" class="rounded-lg">
+                    <input type="file" 
+                           id="fileInput" 
+                           name="files" 
+                           multiple 
+                           accept=".jpg,.jpeg,.png"
+                           class="hidden">
+                    <p class="text-lg text-gray-600">Drop images here or click to select</p>
+                    <p class="text-sm text-gray-500 mt-2">Supported formats: JPG, JPEG, PNG</p>
+                </div>
+                
+                <div id="previewContainer" class="preview-images"></div>
+                <div id="errorMessage" class="error-message hidden"></div>
+                
+                <button type="submit" 
+                        class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                        id="submitButton" 
+                        disabled>
+                    Analyze Images
+                </button>
+            </form>
+            
+            <div id="loadingIndicator" class="hidden text-center py-4">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                <p class="mt-2 text-gray-600">Analyzing images...</p>
+            </div>
+            
+            <div id="reportContainer" class="mt-8 hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const uploadForm = document.getElementById('uploadForm');
+        const submitButton = document.getElementById('submitButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const reportContainer = document.getElementById('reportContainer');
+        const errorMessage = document.getElementById('errorMessage');
+
+        let selectedFiles = new Set();
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            setTimeout(() => {
+                errorMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Handle drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
+
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            const validFiles = files.filter(file => {
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    showError(`File "${file.name}" is not a supported image type`);
+                    return false;
+                }
+                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    showError(`File "${file.name}" is too large. Maximum size is 10MB`);
+                    return false;
+                }
+                return true;
+            });
+
+            validFiles.forEach(file => {
+                if (!Array.from(selectedFiles).some(f => f.name === file.name)) {
+                    selectedFiles.add(file);
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const container = document.createElement('div');
+                        container.className = 'image-container';
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        
+                        const removeBtn = document.createElement('div');
+                        removeBtn.className = 'remove-btn';
+                        removeBtn.innerHTML = '×';
+                        removeBtn.onclick = () => {
+                            selectedFiles.delete(file);
+                            container.remove();
+                            updateSubmitButton();
+                        };
+                        
+                        container.appendChild(img);
+                        container.appendChild(removeBtn);
+                        previewContainer.appendChild(container);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            submitButton.disabled = selectedFiles.size === 0;
+        }
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (selectedFiles.size === 0) {
+                showError('Please select at least one image to analyze');
+                return;
+            }
+
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+            
+            try {
+                submitButton.disabled = true;
+                loadingIndicator.classList.remove('hidden');
+                reportContainer.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+                
+                const response = await fetch('/analyze_files', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    reportContainer.innerHTML = data.report_html;
+                    reportContainer.classList.remove('hidden');
+                } else {
+                    throw new Error(data.error || 'Failed to analyze images');
+                }
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                submitButton.disabled = false;
+                loadingIndicator.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html> 
