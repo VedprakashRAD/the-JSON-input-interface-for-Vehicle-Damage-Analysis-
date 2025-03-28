@@ -15,6 +15,9 @@ from datetime import datetime
 import httpx
 import json
 import asyncio
+import PyPDF2
+import io
+import tempfile
 
 # Configure logging
 logging.basicConfig(
@@ -549,6 +552,76 @@ async def handle_file_uploads(files: List[UploadFile] = File(...)):
             status_code=500,
             content={"success": False, "error": f"An error occurred while processing the files: {str(e)}"}
         )
+
+@app.post("/extract_document_info")
+async def extract_document_info(documents: List[UploadFile] = File(...)):
+    try:
+        results = []
+        for document in documents:
+            # Read PDF content
+            pdf_content = await document.read()
+            
+            # Create a temporary file to store the PDF
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
+                temp_pdf.write(pdf_content)
+                temp_pdf_path = temp_pdf.name
+
+            try:
+                # Extract text from PDF
+                text_content = ""
+                with open(temp_pdf_path, 'rb') as pdf_file:
+                    pdf_reader = PyPDF2.PdfReader(pdf_file)
+                    for page in pdf_reader.pages:
+                        text_content += page.extract_text()
+
+                # Use GPT-3.5 to extract information
+                prompt = f"""Extract the following information from the insurance document text. Return the information in a JSON format with these exact keys:
+                customer_name
+                customer_contact_number
+                policy_number
+                insurance_company_name
+                type_of_policy
+                start_date_of_policy
+                expiry_date_of_policy
+                registration_number
+                engine_number
+                chassis_number
+                body_type
+                vehicle_make
+                model
+                manufacturing_year
+                total_premium_paid
+                address
+
+                Here's the document text:
+                {text_content}
+
+                Return ONLY the JSON object with the extracted information. If a field is not found, set its value to null.
+                """
+
+                response = await client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant that extracts specific information from insurance documents and returns it in JSON format."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.3,
+                    max_tokens=1000
+                )
+
+                # Parse the response
+                extracted_info = json.loads(response.choices[0].message.content)
+                results.append(extracted_info)
+
+            finally:
+                # Clean up temporary file
+                os.unlink(temp_pdf_path)
+
+        return JSONResponse(content=results)
+
+    except Exception as e:
+        logging.error(f"Error processing documents: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

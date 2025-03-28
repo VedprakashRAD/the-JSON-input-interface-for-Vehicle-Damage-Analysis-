@@ -149,6 +149,47 @@
             
             <div id="reportContainer" class="mt-8 hidden"></div>
         </div>
+
+        <!-- Document Upload Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-8">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Document Information Extraction</h2>
+            
+            <form id="documentUploadForm" class="space-y-4">
+                <div id="documentDropZone" class="rounded-lg border-2 border-dashed border-gray-400 p-8 text-center cursor-pointer">
+                    <input type="file" 
+                           id="documentInput" 
+                           name="documents" 
+                           multiple 
+                           accept=".pdf"
+                           class="hidden">
+                    <p class="text-lg text-gray-600">Drop PDF documents here or click to select</p>
+                    <p class="text-sm text-gray-500 mt-2">Supported format: PDF</p>
+                </div>
+                
+                <div id="documentPreviewContainer" class="mt-4">
+                    <ul id="documentList" class="space-y-2"></ul>
+                </div>
+                
+                <div id="documentErrorMessage" class="error-message hidden"></div>
+                
+                <button type="submit" 
+                        class="w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 disabled:opacity-50"
+                        id="documentSubmitButton" 
+                        disabled>
+                    Extract Information
+                </button>
+            </form>
+            
+            <div id="documentLoadingIndicator" class="hidden text-center py-4">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto"></div>
+                <p class="mt-2 text-gray-600">Extracting information from documents...</p>
+            </div>
+            
+            <div id="extractedInfoContainer" class="mt-8 hidden">
+                <h3 class="text-xl font-semibold mb-4">Extracted Information</h3>
+                <div id="extractedDataList" class="space-y-4"></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -285,6 +326,154 @@
                 loadingIndicator.classList.add('hidden');
             }
         });
+
+        // Document Upload Section JavaScript
+        const documentDropZone = document.getElementById('documentDropZone');
+        const documentInput = document.getElementById('documentInput');
+        const documentList = document.getElementById('documentList');
+        const documentUploadForm = document.getElementById('documentUploadForm');
+        const documentSubmitButton = document.getElementById('documentSubmitButton');
+        const documentLoadingIndicator = document.getElementById('documentLoadingIndicator');
+        const extractedInfoContainer = document.getElementById('extractedInfoContainer');
+        const extractedDataList = document.getElementById('extractedDataList');
+        const documentErrorMessage = document.getElementById('documentErrorMessage');
+
+        let selectedDocuments = new Set();
+
+        function showDocumentError(message) {
+            documentErrorMessage.textContent = message;
+            documentErrorMessage.classList.remove('hidden');
+            setTimeout(() => {
+                documentErrorMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        documentDropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            documentDropZone.classList.add('dragover');
+        });
+
+        documentDropZone.addEventListener('dragleave', () => {
+            documentDropZone.classList.remove('dragover');
+        });
+
+        documentDropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            documentDropZone.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            handleDocumentFiles(files);
+        });
+
+        documentDropZone.addEventListener('click', () => {
+            documentInput.click();
+        });
+
+        documentInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            handleDocumentFiles(files);
+        });
+
+        function handleDocumentFiles(files) {
+            const invalidFiles = files.filter(file => !file.type.includes('pdf'));
+            if (invalidFiles.length > 0) {
+                showDocumentError('Please upload PDF files only');
+                return;
+            }
+
+            files.forEach(file => {
+                if (!selectedDocuments.has(file.name)) {
+                    selectedDocuments.add(file.name);
+                    const listItem = document.createElement('li');
+                    listItem.className = 'flex justify-between items-center bg-gray-50 p-2 rounded';
+                    listItem.innerHTML = `
+                        <span class="truncate">${file.name}</span>
+                        <button class="text-red-500 hover:text-red-700" onclick="removeDocument('${file.name}')">×</button>
+                    `;
+                    documentList.appendChild(listItem);
+                }
+            });
+
+            documentSubmitButton.disabled = selectedDocuments.size === 0;
+        }
+
+        function removeDocument(fileName) {
+            selectedDocuments.delete(fileName);
+            const items = documentList.getElementsByTagName('li');
+            for (let item of items) {
+                if (item.textContent.includes(fileName)) {
+                    item.remove();
+                    break;
+                }
+            }
+            documentSubmitButton.disabled = selectedDocuments.size === 0;
+        }
+
+        documentUploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('documentInput');
+            for (let file of fileInput.files) {
+                formData.append('documents', file);
+            }
+
+            documentSubmitButton.disabled = true;
+            documentLoadingIndicator.classList.remove('hidden');
+            extractedInfoContainer.classList.add('hidden');
+
+            try {
+                const response = await fetch('/extract_document_info', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to process documents');
+                }
+
+                const data = await response.json();
+                displayExtractedInfo(data);
+            } catch (error) {
+                showDocumentError(error.message);
+            } finally {
+                documentSubmitButton.disabled = false;
+                documentLoadingIndicator.classList.add('hidden');
+            }
+        });
+
+        function displayExtractedInfo(data) {
+            extractedDataList.innerHTML = '';
+            
+            data.forEach((docInfo, index) => {
+                const docContainer = document.createElement('div');
+                docContainer.className = 'bg-gray-50 p-4 rounded-lg';
+                
+                const title = document.createElement('h4');
+                title.className = 'font-semibold text-lg mb-3';
+                title.textContent = `Document ${index + 1}`;
+                docContainer.appendChild(title);
+
+                const table = document.createElement('table');
+                table.className = 'w-full';
+                
+                Object.entries(docInfo).forEach(([key, value]) => {
+                    const row = table.insertRow();
+                    const keyCell = row.insertCell();
+                    const valueCell = row.insertCell();
+                    
+                    keyCell.className = 'font-medium text-gray-700 pr-4 py-2';
+                    keyCell.textContent = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    
+                    valueCell.className = 'text-gray-800 py-2';
+                    valueCell.textContent = value || 'N/A';
+                });
+                
+                docContainer.appendChild(table);
+                extractedDataList.appendChild(docContainer);
+            });
+            
+            extractedInfoContainer.classList.remove('hidden');
+        }
     </script>
 </body>
 </html> 
