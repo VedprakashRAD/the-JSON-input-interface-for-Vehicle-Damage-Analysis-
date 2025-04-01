@@ -112,6 +112,24 @@
             text-align: center;
             margin-top: 10px;
         }
+        .json-input {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .json-example {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+            font-family: monospace;
+            white-space: pre;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -119,35 +137,39 @@
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
             <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Vehicle Damage Analysis</h1>
             
-            <form id="uploadForm" class="space-y-4">
-                <div id="dropZone" class="rounded-lg">
-                    <input type="file" 
-                           id="fileInput" 
-                           name="files" 
-                           multiple 
-                           accept=".jpg,.jpeg,.png"
-                           class="hidden">
-                    <p class="text-lg text-gray-600">Drop images here or click to select</p>
-                    <p class="text-sm text-gray-500 mt-2">Supported formats: JPG, JPEG, PNG</p>
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-2">Example JSON Format:</h3>
+                <div class="json-example">
+{
+    "order_id": "ORDER123",
+    "image_urls": [
+        "https://example.com/image1.jpg",
+        "https://example.com/image2.jpg"
+    ]
+}</div>
+            </div>
+
+            <form id="vehicleDamageForm" class="space-y-4">
+                <div>
+                    <label for="jsonInput" class="block text-sm font-medium text-gray-700 mb-2">Enter JSON Input:</label>
+                    <textarea id="jsonInput" class="json-input" placeholder="Enter your JSON here..."></textarea>
                 </div>
                 
-                <div id="previewContainer" class="preview-images"></div>
-                <div id="errorMessage" class="error-message hidden"></div>
+                <div id="errorMessage" class="text-red-500 text-sm hidden"></div>
                 
                 <button type="submit" 
-                        class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50"
-                        id="submitButton" 
-                        disabled>
-                    Analyze Images
+                        class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                        id="analyzeButton">
+                    Analyze Vehicle Damage
                 </button>
             </form>
             
             <div id="loadingIndicator" class="hidden text-center py-4">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                <p class="mt-2 text-gray-600">Analyzing images...</p>
+                <p class="mt-2 text-gray-600">Analyzing...</p>
             </div>
             
-            <div id="reportContainer" class="mt-8 hidden"></div>
+            <div id="analysisResult" class="mt-8 hidden"></div>
         </div>
 
         <!-- Document Upload Section -->
@@ -193,16 +215,13 @@
     </div>
 
     <script>
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const previewContainer = document.getElementById('previewContainer');
-        const uploadForm = document.getElementById('uploadForm');
-        const submitButton = document.getElementById('submitButton');
+        // Vehicle Damage Analysis Form Handler
+        const vehicleDamageForm = document.getElementById('vehicleDamageForm');
+        const jsonInput = document.getElementById('jsonInput');
+        const analyzeButton = document.getElementById('analyzeButton');
         const loadingIndicator = document.getElementById('loadingIndicator');
-        const reportContainer = document.getElementById('reportContainer');
+        const analysisResult = document.getElementById('analysisResult');
         const errorMessage = document.getElementById('errorMessage');
-
-        let selectedFiles = new Set();
 
         function showError(message) {
             errorMessage.textContent = message;
@@ -212,117 +231,45 @@
             }, 5000);
         }
 
-        // Handle drag and drop
-        dropZone.addEventListener('dragover', (e) => {
+        vehicleDamageForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            const files = Array.from(e.dataTransfer.files);
-            handleFiles(files);
-        });
-
-        dropZone.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            handleFiles(files);
-        });
-
-        function handleFiles(files) {
-            const validFiles = files.filter(file => {
-                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                if (!validTypes.includes(file.type)) {
-                    showError(`File "${file.name}" is not a supported image type`);
-                    return false;
-                }
-                if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                    showError(`File "${file.name}" is too large. Maximum size is 10MB`);
-                    return false;
-                }
-                return true;
-            });
-
-            validFiles.forEach(file => {
-                if (!Array.from(selectedFiles).some(f => f.name === file.name)) {
-                    selectedFiles.add(file);
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const container = document.createElement('div');
-                        container.className = 'image-container';
-                        
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        
-                        const removeBtn = document.createElement('div');
-                        removeBtn.className = 'remove-btn';
-                        removeBtn.innerHTML = '×';
-                        removeBtn.onclick = () => {
-                            selectedFiles.delete(file);
-                            container.remove();
-                            updateSubmitButton();
-                        };
-                        
-                        container.appendChild(img);
-                        container.appendChild(removeBtn);
-                        previewContainer.appendChild(container);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            updateSubmitButton();
-        }
-
-        function updateSubmitButton() {
-            submitButton.disabled = selectedFiles.size === 0;
-        }
-
-        uploadForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (selectedFiles.size === 0) {
-                showError('Please select at least one image to analyze');
-                return;
-            }
-
-            const formData = new FormData();
-            selectedFiles.forEach(file => {
-                formData.append('files', file);
-            });
             
             try {
-                submitButton.disabled = true;
+                // Parse JSON to validate format
+                const jsonData = JSON.parse(jsonInput.value);
+                
+                // Disable button and show loading
+                analyzeButton.disabled = true;
                 loadingIndicator.classList.remove('hidden');
-                reportContainer.classList.add('hidden');
-                errorMessage.classList.add('hidden');
-                
-                const response = await fetch('/analyze_files', {
+                analysisResult.classList.add('hidden');
+
+                // Make API call
+                const response = await fetch('/analyze/vehicle-damage', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: jsonInput.value
                 });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    reportContainer.innerHTML = data.report_html;
-                    reportContainer.classList.remove('hidden');
-                } else {
-                    throw new Error(data.error || 'Failed to analyze images');
+
+                if (!response.ok) {
+                    throw new Error('Failed to analyze vehicle damage');
                 }
+
+                const result = await response.json();
+                
+                // Display result
+                analysisResult.innerHTML = `
+                    <h3 class="text-xl font-semibold mb-4">Analysis Result</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <pre class="whitespace-pre-wrap">${JSON.stringify(result, null, 2)}</pre>
+                    </div>
+                `;
+                analysisResult.classList.remove('hidden');
             } catch (error) {
                 showError(error.message);
             } finally {
-                submitButton.disabled = false;
+                analyzeButton.disabled = false;
                 loadingIndicator.classList.add('hidden');
             }
         });
@@ -446,7 +393,7 @@
             
             data.forEach((docInfo, index) => {
                 const docContainer = document.createElement('div');
-                docContainer.className = 'bg-gray-50 p-4 rounded-lg';
+                docContainer.className = 'bg-gray-50 p-4 rounded-lg mb-4';
                 
                 const title = document.createElement('h4');
                 title.className = 'font-semibold text-lg mb-3';
