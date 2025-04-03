@@ -1,24 +1,48 @@
-# OpenAI API Interface
+# AI Analysis API
 
-A FastAPI application that provides a web interface for OpenAI's GPT-3.5 Turbo and GPT-4 Vision APIs.
+A FastAPI-based API service that provides AI-powered analysis for various types of content including text, images, PDFs, webpages, vehicle damage assessment, and audio processing.
 
 ## Features
 
-- Report generation using GPT-3.5 Turbo
-- Image analysis using GPT-4 Vision
-- Modern UI with Tailwind CSS
-- Error handling and logging
-- Async API calls
+- **Text Analysis**: Analyze text content using AI
+- **Image Analysis**: Process and analyze images
+- **PDF Analysis**: Extract and analyze PDF content
+- **Webpage Analysis**: Analyze web content
+- **Vehicle Damage Assessment**: 
+  - Process vehicle damage images
+  - Generate detailed PDF reports
+  - Damage severity estimation
+  - Cost estimation
+- **Audio Processing**:
+  - Download and process audio files
+  - Extract audio metadata
+  - Integration with external services
 
-## Setup
+## Project Structure
+
+```
+openai-api/
+├── app/
+│   ├── main.py                  # FastAPI application entry point
+│   ├── models/                  # Pydantic models
+│   ├── routes/                  # API routes
+│   ├── services/               # Business logic
+│   └── core/                   # Core configurations
+├── static/                     # Static files
+├── templates/                  # HTML templates
+├── uploads/                    # Upload directory
+└── requirements.txt           # Project dependencies
+```
+
+## Installation
 
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd OpenAI_API
+cd openai-api
 ```
 
-2. Create a virtual environment and activate it:
+2. Create a virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -29,45 +53,108 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Create a `.env` file in the root directory and add your OpenAI API key:
+4. Create required directories:
+```bash
+mkdir -p static/reports uploads/audio
 ```
-OPENAI_API_KEY="your-api-key-here"
+
+5. Create a `.env` file with your configuration:
+```
+OPENAI_API_KEY=your_api_key
 ```
 
 ## Running the Application
 
-1. Start the FastAPI server:
+Start the server:
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
 ```
 
-2. Open your browser and navigate to:
-```
-http://localhost:8000
-```
-
-## Usage
-
-### Generate Report
-1. Enter your text data in the text area
-2. Specify the output format (default: "summary, findings, recommendations")
-3. Click "Generate Report"
-
-### Analyze Image
-1. Enter an image URL in the input field
-2. Click "Analyze Image"
+The API will be available at:
+- API Documentation: http://localhost:8001/docs
+- ReDoc Documentation: http://localhost:8001/redoc
 
 ## API Endpoints
 
-- `GET /`: Home page with the web interface
-- `POST /generate_report`: Generate a report from text data
-- `POST /analyze_image`: Analyze an image from URL
+### Analysis Endpoints
+- `GET /`: Home endpoint
+- `POST /analyze/text`: Text analysis
+- `POST /analyze/image`: Image analysis
+- `POST /analyze/pdf`: PDF analysis
+- `POST /analyze/webpage`: Webpage analysis
 
-## Error Handling
+### Vehicle Analysis Endpoints
+- `POST /vehicle/analyze/damage`: Vehicle damage analysis
 
-Errors are logged to `api_errors.log` in the root directory.
+### Audio Processing Endpoints
+- `POST /audio/process`: Audio file processing
 
-## Cost Considerations
+## Example Requests
 
-- GPT-3.5 Turbo: ~$0.0015/1K tokens
-- GPT-4 Vision: ~$0.01-$0.03/image 
+### Vehicle Damage Analysis
+```bash
+curl -X 'POST' \
+  'http://localhost:8001/vehicle/analyze/damage' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "order_id": "ORDER123",
+    "image_urls": [
+        "https://example.com/damage1.jpg",
+        "https://example.com/damage2.jpg"
+    ]
+}'
+```
+
+### Audio Processing
+```bash
+curl -X 'POST' \
+  'http://localhost:8001/audio/process' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "url": "https://example.com/audio.mp3",
+    "username": "your_username",
+    "password": "your_password",
+    "srn_number": "SRN123",
+    "order_id": "ORDER123"
+}'
+```
+
+## Dependencies
+
+- FastAPI
+- Uvicorn
+- OpenAI
+- ReportLab
+- Mutagen
+- And more (see requirements.txt)
+
+## Development
+
+1. Install development dependencies:
+```bash
+pip install black pytest
+```
+
+2. Format code:
+```bash
+black .
+```
+
+3. Run tests:
+```bash
+pytest
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 
