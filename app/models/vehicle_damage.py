@@ -4,7 +4,7 @@ from datetime import datetime
 
 class VehicleDamageRequest(BaseModel):
     order_id: str = Field(..., description="Unique identifier for the damage assessment order")
-    image_urls: List[HttpUrl] = Field(..., description="List of URLs pointing to vehicle damage images", min_items=1)
+    image_urls: List[str] = Field(..., description="List of URLs pointing to vehicle damage images", min_items=1)
 
     class Config:
         json_schema_extra = {
@@ -15,4 +15,11 @@ class VehicleDamageRequest(BaseModel):
                     "https://example.com/image2.jpg"
                 ]
             }
-        } 
+        }
+
+class VehicleDamageResponse(BaseModel):
+    success: bool
+    message: str
+    order_id: str
+    analysis: dict
+    pdf_report: dict 

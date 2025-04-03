@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vehicle Damage Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .damage-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .damage-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .recommendations {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Vehicle Damage Assessment Report</h1>
+        <p>Order ID: {{ order_id }}</p>
+    </div>
+
+    <div class="section">
+        <h2>Summary</h2>
+        <table>
+            <tr>
+                <th>Total Images</th>
+                <td>{{ total_images }}</td>
+            </tr>
+            <tr>
+                <th>Processed Images</th>
+                <td>{{ processed_images }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Detailed Analysis</h2>
+        {% for result in results %}
+        <div class="damage-item">
+            <img src="{{ result.image_url }}" alt="Vehicle Damage" class="damage-image">
+            
+            <h3>Analysis Results</h3>
+            <table>
+                <tr>
+                    <th>Damage Detected</th>
+                    <td>{{ result.analysis.damage_detected }}</td>
+                </tr>
+                <tr>
+                    <th>Severity</th>
+                    <td>{{ result.analysis.damage_severity }}</td>
+                </tr>
+                <tr>
+                    <th>Affected Areas</th>
+                    <td>{{ result.analysis.affected_areas | join(", ") }}</td>
+                </tr>
+                <tr>
+                    <th>Estimated Cost</th>
+                    <td>{{ result.analysis.estimated_repair_cost }}</td>
+                </tr>
+            </table>
+
+            <div class="recommendations">
+                <h4>Recommendations</h4>
+                <ul>
+                {% for rec in result.analysis.recommendations %}
+                    <li>{{ rec }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html> 

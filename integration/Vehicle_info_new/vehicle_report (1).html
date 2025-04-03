@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Report</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: rgb(204, 204, 204);
+    }
+
+
+    .page {
+      width: 21cm;
+      height: 29.7cm;
+      margin: auto;
+      background-color: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      padding: 18px;
+      box-sizing: border-box;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 0;
+    }
+
+    @media print {
+
+      body,
+      .page {
+        margin: 0;
+        box-shadow: 0;
+      }
+    }
+
+    .text_clr {
+      /* color: #FFB700; */
+      color: #015386;
+      /* color: #205781; || FFD95F */
+    }
+
+    .primary_bg {
+      /* background-color: #FFB700; */
+      background-color: #0076BE;
+    }
+
+    .table_header_bg {
+      background-color: #FFF3D4;
+    }
+
+    .underline_clr {
+      text-decoration: underline;
+      text-decoration-color: #FFB700;
+    }
+
+    .xs_text {
+      font-size: 8px;
+    }
+
+    .sm_text,
+    .contents {
+      font-size: 11px;
+    }
+
+    .md_text {
+      font-size: 14px;
+    }
+
+    .lg_text {
+      font-size: 16px;
+    }
+
+
+    .table-cell-2 {
+      grid-column: span 2 / span 2;
+    }
+
+    .table-cell-3 {
+      grid-column: span 3 / span 3;
+    }
+
+    .table-cell-4 {
+      grid-column: span 4 / span 4;
+    }
+
+    .table-cell-style {
+      font-size: 9px;
+      padding: 6px 10px;
+      border-right: 1px solid #9ca3af;
+      border-bottom: 1px solid #9ca3af;
+      color: #000;
+      font-weight: 500;
+    }
+
+    .contents .table-cell-style:last-child {
+      border-right: none;
+    }
+
+    .contents:last-child .table-cell-style {
+      border-bottom: none;
+    }
+
+    .table-cell-style:nth-child(2n) {
+      color: black;
+      text-align: center;
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+  <!-- page-1 -->
+  <div class="page bg-white flex flex-col gap-2">
+    <!-- Header -->
+    <div class="flex justify-between items-center px-2 py-2">
+      <div class="flex-1 flex flex-col">
+        <div>
+          <img class="h-10 object-contain -ml-1"
+            src="https://public-prod-ready.s3.ap-south-1.amazonaws.com/sharable/ra_logo_1.png" alt="logo">
+        </div>
+        <p class="text-2xl font-semibold tracking-wider text_clr">Comprehensive Vehicle Report</p>
+        <p class="text-xs font-semibold tracking-wider text-gray-600">A system generated report by AI operated Impact
+          Analysis system</p>
+      </div>
+      <div class="border border-gray-600 rounded-lg w-20 h-28 grid gap-1 place-items-center p-2">
+        <div class="sm_text tracking-wide">CLAIMS</div>
+        <div class="w-14 h-14 border border-gray-600 grid place-items-center">QR</div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="flex-1 flex flex-col gap-4">
+      <div class="space-y-3">
+        <p class="font-semibold tracking-wide">Vehicle Details</p>
+        <div class="grid grid-cols-5 gap-4">
+          <div class="col-span-3">
+            <div class="grid grid-cols-5 border border-gray-400 sm_text overflow-hidden">
+              <div class="contents">
+                <div class="table-cell-style table-cell-2 bg-gray-100">Parameter</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Details</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Make & Model</div>
+                <div class="table-cell-style table-cell-3">Hyundai grand i10</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Year of Manufacture</div>
+                <div class="table-cell-style table-cell-3">2015</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Odometer Reading</div>
+                <div class="table-cell-style table-cell-3">68,000 KM</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Vehicle Color</div>
+                <div class="table-cell-style table-cell-3">White</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Vehicle Registration Number</div>
+                <div class="table-cell-style table-cell-3">TN57AU2007</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Registered State</div>
+                <div class="table-cell-style table-cell-3">Tamilnadu</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">RTO Name</div>
+                <div class="table-cell-style table-cell-3">Theni RTO</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Claims Reported Location</div>
+                <div class="table-cell-style table-cell-3">Bengaluru</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-span-2 grid place-items-center rounded-lg overflow-hidden">
+            <img class="h-full object-cover"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9r7KMRP0SlAmDwPZ3QkKNm_2PzggaAYRHFw&s" alt="">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="space-y-2">
+        <p class="font-semibold tracking-wide">Vehicle Dashboard & Condition</p>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="col-span-2 grid grid-cols-5 border border-gray-400 sm_text overflow-hidden">
+            <div class="contents">
+              <div class="table-cell-style table-cell-2 bg-gray-100">Parameter</div>
+              <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Observation</div>
+            </div>
+
+            <div class="contents">
+              <div class="table-cell-style table-cell-2">Warning Lights</div>
+              <div class="table-cell-style table-cell-3">
+                Check Engine, Oil Pressure, Battery, and Handbrake warning lights are ON
+              </div>
+            </div>
+
+            <div class="contents">
+              <div class="table-cell-style table-cell-2">Fuel Level</div>
+              <div class="table-cell-style table-cell-3">Low fuel (near empty)</div>
+            </div>
+
+            <div class="contents">
+              <div class="table-cell-style table-cell-2">Engine Temperature</div>
+              <div class="table-cell-style table-cell-3">Normal range</div>
+            </div>
+
+            <div class="contents">
+              <div class="table-cell-style table-cell-2">Speedometer Reading</div>
+              <div class="table-cell-style table-cell-3">0 km/h (vehicle is stationary)</div>
+            </div>
+
+            <div class="contents">
+              <div class="table-cell-style table-cell-2">Tachometer Reading</div>
+              <div class="table-cell-style table-cell-3">Around 0.8 RPM (engine idling)</div>
+            </div>
+          </div>
+
+
+
+          <div class="grid place-items-center rounded-lg overflow-hidden">
+            <img class="h-full object-cover"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_dGZOFlF3NSW11iSlUrcyqW8KibgwFhUiTg&s" alt="">
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="font-semibold tracking-wide">Stickers & Signs Observed</p>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="col-span-2 grid grid-cols-5 border border-gray-400 sm_text overflow-hidden">
+            <div class="contents">
+              <div class="table-cell-style table-cell-2 bg-gray-100">Type</div>
+              <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Description</div>
+            </div>
+
+            <div class="contents">
+              <div class="table-cell-style table-cell-2">Number Plate Sticker</div>
+              <div class="table-cell-style table-cell-3">
+                "IND" marking on the number plate
+              </div>
+            </div>
+
+            <div class="contents">
+              <div class="table-cell-style table-cell-2">Rear Windshield</div>
+              <div class="table-cell-style table-cell-3">No visible stickers</div>
+            </div>
+
+            <div class="contents">
+              <div class="table-cell-style table-cell-2">Body Stickers</div>
+              <div class="table-cell-style table-cell-3">"CRDi" and "Sportz" badging on the rear</div>
+            </div>
+          </div>
+
+          <div class="grid place-items-center rounded-lg overflow-hidden">
+            <!-- <img class="object-cover" src="./assets/eicher_idv.jpeg" alt=""> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="font-semibold tracking-wide">Damage Analysis & Report</p>
+        <div class="ps-5 space-y-2">
+          <p class="text-xs font-semibold tracking-wider text-gray-800">1. Exterior Damage Analysis</p>
+          <div class="ps-3 grid grid-cols-4 gap-4">
+            <div class="col-span-4 grid grid-cols-8 border border-gray-400 sm_text overflow-hidden">
+              <div class="contents">
+                <div class="table-cell-style table-cell-2 bg-gray-100">Component</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Damage Description</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Recommended Action</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Front Bumper & Grille</div>
+                <div class="table-cell-style table-cell-3">
+                  Misaligned, cracks, dents, scratches
+                </div>
+                <div class="table-cell-style table-cell-3">Replace bumper & grille</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Headlights & Fender</div>
+                <div class="table-cell-style table-cell-3">Misaligned headlamp, left fender dents</div>
+                <div class="table-cell-style table-cell-3">Align/replace headlamp, repair fender</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Hood Alignment & Latch</div>
+                <div class="table-cell-style table-cell-3">Hood misalignment or latch issues</div>
+                <div class="table-cell-style table-cell-3">Adjust or replace latch mechanism</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- Footer -->
+    <div class="px-1 flex gap-4 items-center sm_text">
+      <div class="flex-1">
+        <p class="font-bold tracking-wide">Sundaravijayam Automobile Services Private Limited</p>
+        <p><span class="font-normal">839/2, 24th Main Rd, Behind
+            Thirumala Theatre, 1st Sector, HSR Layout, Bengaluru, Karnataka 560102</span></p>
+        <a href="https://readyassist.in/" class="text-sky-500" target="_blank">www.readyassist.in</a>
+      </div>
+      <div>
+        <span>1 of 3</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- page-2 -->
+  <div class="page bg-white flex flex-col gap-2">
+    <!-- Header -->
+    <div class="flex justify-between items-center px-2 py-2">
+    </div>
+
+    <!-- Body -->
+    <div class="flex-1 flex flex-col gap-4">
+
+      <div class="space-y-2">
+        <p class="font-semibold tracking-wide"></p>
+        <div class="ps-5 space-y-2">
+          <p class="text-xs font-semibold tracking-wider text-gray-800">2. Mechanical & Structural Assessment</p>
+          <div class="ps-3 grid grid-cols-4 gap-4">
+            <div class="col-span-4 grid grid-cols-8 border border-gray-400 sm_text overflow-hidden">
+              <div class="contents">
+                <div class="table-cell-style table-cell-2 bg-gray-100">Component</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Observation</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Recommendation</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Engine Bay</div>
+                <div class="table-cell-style table-cell-3">
+                  No visible catastrophic damage, potential st
+                </div>
+                <div class="table-cell-style table-cell-3">Full engine inspection</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Battery & Electrical</div>
+                <div class="table-cell-style table-cell-3">Battery intact, possible wiring issues</div>
+                <div class="table-cell-style table-cell-3">Electrical diagnostic</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Suspension & Underbody</div>
+                <div class="table-cell-style table-cell-3">Possible steering or control arm impact</div>
+                <div class="table-cell-style table-cell-3">Suspension & alignment test</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="font-semibold tracking-wide"></p>
+        <div class="ps-5 space-y-2">
+          <p class="text-xs font-semibold tracking-wider text-gray-800">3. Dashboard Warning Lights & Diagnostics</p>
+          <div class="ps-3 grid grid-cols-4 gap-4">
+            <div class="col-span-4 grid grid-cols-8 border border-gray-400 sm_text overflow-hidden">
+              <div class="contents">
+                <div class="table-cell-style table-cell-2 bg-gray-100">Warning Light</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Possible Issue</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Suggested Action</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Check Engine Light (CEL)</div>
+                <div class="table-cell-style table-cell-3">
+                  Possible engine sensor fault
+                </div>
+                <div class="table-cell-style table-cell-3">OBD-II diagnostic scan</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Battery Warning Light</div>
+                <div class="table-cell-style table-cell-3">Alternator/battery issue</div>
+                <div class="table-cell-style table-cell-3">Battery & alternator check</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Oil Pressure Warning</div>
+                <div class="table-cell-style table-cell-3">Low oil levels or pressure sensor fault</div>
+                <div class="table-cell-style table-cell-3">Oil level & pressure test</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Power Steering Warning</div>
+                <div class="table-cell-style table-cell-3">Power steering fluid or system issue</div>
+                <div class="table-cell-style table-cell-3">Inspect power steering system</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Brake System Warning</div>
+                <div class="table-cell-style table-cell-3">Low brake fluid or ABS issue</div>
+                <div class="table-cell-style table-cell-3">Check brake fluid & ABS system</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Fuel Warning Light</div>
+                <div class="table-cell-style table-cell-3">Low fuel or sensor malfunction</div>
+                <div class="table-cell-style table-cell-3">Verify fuel levels & sensors</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="font-semibold tracking-wide"></p>
+        <div class="ps-5 space-y-2">
+          <p class="text-xs font-semibold tracking-wider text-gray-800">4. Estimated Repair Costs</p>
+          <div class="ps-3 grid grid-cols-4 gap-4">
+            <div class="col-span-4 xs_text font-medium">Category 1: Exterior Bodywork & Paint</div>
+            <div class="col-span-4 grid grid-cols-5 border border-gray-400 sm_text overflow-hidden">
+              <div class="contents">
+                <div class="table-cell-style table-cell-2 bg-gray-100">Repair Item</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Estimated Cost (₹)</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Front Bumper Replacement</div>
+                <div class="table-cell-style table-cell-3">
+                  8,000 - 12,000
+                </div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Grille Realignment/Replacement</div>
+                <div class="table-cell-style table-cell-3">3,000 - 5,000</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Fender Dent Repair & Repainting</div>
+                <div class="table-cell-style table-cell-3">5,000 - 8,000</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Headlamp Alignment/Replacement</div>
+                <div class="table-cell-style table-cell-3">2,500 - 7,000 (per unit)</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Hood Latch Realignment</div>
+                <div class="table-cell-style table-cell-3">2,000 - 4,000</div>
+              </div>
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Fender Dent Repair & Repainting</div>
+                <div class="table-cell-style table-cell-3">5,000 - 8,000</div>
+              </div>
+
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2 bg-gray-100">Total Estimated Bodywork Cost</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">₹20,500 - ₹36,000</div>
+              </div>
+            </div>
+
+            <div class="grid place-items-center rounded-lg overflow-hidden">
+              <!-- <img class="object-cover" src="./assets/eicher_idv.jpeg" alt=""> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="font-semibold tracking-wide"></p>
+        <div class="ps-5 space-y-2">
+          <p class="text-xs font-semibold tracking-wider text-gray-800"></p>
+          <div class="ps-3 grid grid-cols-4 gap-4">
+            <div class="col-span-4 xs_text font-medium">Category 2: Mechanical & Electrical Repairs</div>
+            <div class="col-span-4 grid grid-cols-5 border border-gray-400 sm_text overflow-hidden">
+              <div class="contents">
+                <div class="table-cell-style table-cell-2 bg-gray-100">Repair Item</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Estimated Cost (₹)</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Engine Diagnostic & Repair</div>
+                <div class="table-cell-style table-cell-3">
+                  5,000 - 15,000
+                </div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Battery & Alternator Check</div>
+                <div class="table-cell-style table-cell-3">2,500 - 5,000</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Oil Leak Inspection & Pressure Test</div>
+                <div class="table-cell-style table-cell-3">1,500 - 4,000</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Power Steering System Check</div>
+                <div class="table-cell-style table-cell-3">3,000 - 6,000</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Brake System Check & Fluid Top-up</div>
+                <div class="table-cell-style table-cell-3">1,500 - 3,500</div>
+              </div>
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Suspension & Alignment</div>
+                <div class="table-cell-style table-cell-3">4,000 - 8,000</div>
+              </div>
+
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2 bg-gray-100">Total Estimated Mechanical Repair Cost</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">₹17,500 - ₹41,500</div>
+              </div>
+            </div>
+
+            <div class="col-span-4 font-medium pb-3 border-b-2 border-sky-400">Total Estimated Repair Cost: ₹38,000 -
+              ₹77,500</div>
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- Footer -->
+    <div class="px-1 flex gap-4 items-center sm_text">
+      <div class="flex-1">
+        <p class="font-bold tracking-wide">Sundaravijayam Automobile Services Private Limited</p>
+        <p><span class="font-normal">839/2, 24th Main Rd, Behind
+            Thirumala Theatre, 1st Sector, HSR Layout, Bengaluru, Karnataka 560102</span></p>
+        <a href="https://readyassist.in/" class="text-sky-500" target="_blank">www.readyassist.in</a>
+      </div>
+      <div>
+        <span>2 of 3</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- page-3 -->
+  <div class="page bg-white flex flex-col gap-2">
+    <!-- Header -->
+    <div class="flex justify-between items-center px-2 py-2">
+    </div>
+
+    <!-- Body -->
+    <div class="flex-1 flex flex-col gap-4">
+
+      <div class="space-y-2">
+        <p class="font-semibold tracking-wide"></p>
+        <div class="ps-5 space-y-2">
+          <p class="text-xs font-semibold tracking-wider text-gray-800">5. Market Valuation of the Vehicle</p>
+          <div class="ps-3 grid grid-cols-4 gap-4">
+            <div class="col-span-4 grid grid-cols-5 border border-gray-400 sm_text overflow-hidden">
+              <div class="contents">
+                <div class="table-cell-style table-cell-2 bg-gray-100">Source</div>
+                <div class="table-cell-style table-cell-3 uppercase bg-gray-100">Estimated Value (₹)</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">Orange Book Value</div>
+                <div class="table-cell-style table-cell-3">
+                  2,28,403+
+                </div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">CarWale</div>
+                <div class="table-cell-style table-cell-3">2.49 Lakh - 6.5 Lakh</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">CarDekho</div>
+                <div class="table-cell-style table-cell-3">~4.25 Lakh</div>
+              </div>
+
+              <div class="contents">
+                <div class="table-cell-style table-cell-2">OLX Listings</div>
+                <div class="table-cell-style table-cell-3">3.61 Lakh - 4.50 Lakh</div>
+              </div>
+            </div>
+            <div class="col-span-4 xs_text font-medium"><span class="font-semibold">Note:</span> These valuations assume
+              the vehicle is in good condition without major damage.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mt-4">
+        <div class="rounded-lg overflow-hidden bg-gray-100 h-[270px]"></div>
+        <div class="rounded-lg overflow-hidden bg-gray-100 h-[270px]"></div>
+        <div class="rounded-lg overflow-hidden bg-gray-100 h-[270px]"></div>
+        <div class="rounded-lg overflow-hidden bg-gray-100 h-[270px]"></div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div class="px-1 flex gap-4 items-center sm_text">
+      <div class="flex-1">
+        <p class="font-bold tracking-wide">Sundaravijayam Automobile Services Private Limited</p>
+        <p><span class="font-normal">839/2, 24th Main Rd, Behind
+            Thirumala Theatre, 1st Sector, HSR Layout, Bengaluru, Karnataka 560102</span></p>
+        <a href="https://readyassist.in/" class="text-sky-500" target="_blank">www.readyassist.in</a>
+      </div>
+      <div>
+        <span>3 of 3</span>
+      </div>
+    </div>
+</body>
+
+</html>
